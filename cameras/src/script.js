@@ -16,7 +16,27 @@
  * We are going to focus on the OrthographicCamera and the PerspectiveCamera.
  */
 
+/**
+ * Camera Control Types :
+ *
+ * 1. DeviceOrientationControls : DeviceOrientationControls will automatically retrieve the device orientation if your device, OS,
+ *    and browser allow it and rotate the camera accordingly. You can use it to create immersive universes or VR experiences if you have the right equipment. But deprecated by latest version of IOS
+ * 2. FlyControls : FlyControls enable moving the camera like if you were on a spaceship. You can rotate on all 3 axes, go forward and go backward.
+ * 3. FirstPersonControls : FirstPersonControls is just like FlyControls, but with a fixed up axis. You can see that like a flying bird view where the bird cannot do a barrel roll.
+ *    While the FirstPersonControls contains "FirstPerson," it doesn't work like in FPS games.
+ * 4. PointerLockControls : PointerLockControls uses the pointer lock JavaScript API. This API hides the cursor, keeps it centered,
+ *    and keeps sending the movements in the mousemove event callback. With this API, you can create FPS games right inside the browser.
+ *    While this class sounds very promising if you want to create that kind of interaction, it'll only handle the camera rotation when the pointer is locked.
+ *    You'll have to handle the camera position and game physics by yourself.
+ * 5. OrbitControls : OrbitControls is very similar to the controls we made below. You can rotate around a point with the left mouse, translate laterally using the right mouse, and zoom in or out using the wheel.
+ * 6. TrackballControls : TrackballControls is just like OrbitControls but there are no limits in terms of vertical angle. You can keep rotating and do spins with the camera even if the scene gets upside down.
+ * 7. TransformControls : TransformControls has nothing to do with the camera. You can use it to add a gizmo to an object to move that object.
+ * 8. DragControls : Just like the TransformControls, DragControls has nothing to do with the camera. You can use it to move objects on a plane facing the camera by drag and dropping them.
+ *    We will only use the OrbitControls but feel free to test the other classes.
+ */
+
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 /**
  * Base
@@ -92,6 +112,11 @@ camera.position.z = 3;
 camera.lookAt(mesh.position);
 scene.add(camera);
 
+//Orbit Control Library:
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+
 // Renderer
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
@@ -108,14 +133,16 @@ const tick = () => {
   //   mesh.rotation.y = elapsedTime;
 
   //Update camera
-  camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 3;
-  camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 3;
-  camera.position.y = cursor.y * 5;
+  // camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 3;
+  // camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 3;
+  // camera.position.y = cursor.y * 5;
   camera.lookAt(mesh.position);
 
   //   camera.position.x = cursor.x * 3;
   //   camera.position.y = -(cursor.y * 3); // Inverting the mouse drag view here, so we see the top of the cube when we move the mouse up
 
+  //Update OrbitCamera controls
+  controls.update(); // this is req if you are using the damping (the smooth effect you get even after the mouse click and drag is released)
   // Render
   renderer.render(scene, camera);
 
